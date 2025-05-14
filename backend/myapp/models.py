@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Category(models.Model):
+    usr = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
@@ -9,6 +10,7 @@ class Category(models.Model):
         return self.name
 
 class Product(models.Model):
+    usr = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField(blank=True)
@@ -25,6 +27,7 @@ class Product(models.Model):
         return f"{self.name} ({self.quantity_in_stock} in stock)"
 
 class Customer(models.Model):
+    usr = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=20, blank=True)
     email = models.EmailField(blank=True)
@@ -36,6 +39,7 @@ class Customer(models.Model):
         return self.name
 
 class Prescription(models.Model):
+    usr = models.ForeignKey(User, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     doctor_name = models.CharField(max_length=200)
     prescription_date = models.DateField()
@@ -47,6 +51,7 @@ class Prescription(models.Model):
         return f"Prescription for {self.customer.name} by {self.doctor_name}"
 
 class Sale(models.Model):
+    usr = models.ForeignKey(User, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -66,6 +71,7 @@ class Sale(models.Model):
         return f"Sale #{self.id} - {self.total_amount}"
 
 class SaleItem(models.Model):
+    usr = models.ForeignKey(User, on_delete=models.CASCADE)
     sale = models.ForeignKey(Sale, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
@@ -80,6 +86,7 @@ class SaleItem(models.Model):
         return (self.unit_price * self.quantity) - self.discount
 
 class InventoryLog(models.Model):
+    usr = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_change = models.IntegerField()
     reason = models.CharField(max_length=100, choices=[
